@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import moment from "moment";
 //Styling
 import { Layout } from "antd";
 import { Row, Col } from "antd";
@@ -10,6 +11,10 @@ import { Statistic } from "antd";
 import { storyContract, web3 } from "../utils/utils";
 
 const { Countdown } = Statistic;
+
+const calculateDeadline = creationTime => {
+  return moment(parseInt(creationTime) * 1000).add(48, "h");
+};
 
 class ChapterList extends Component {
   state = {
@@ -42,10 +47,12 @@ class ChapterList extends Component {
             chapterName: chapter.name,
             isResolved: chapter.isResolved,
             staked: web3.utils.fromWei(chapter.bounty, "ether"),
-            creationDate: chapter.creationDate
+            creationDate: chapter.creationTime,
+            deadline: calculateDeadline(chapter.creationTime)
           };
         });
 
+        console.log(listofChapters);
         that.setState({ listofChapters });
       });
 
@@ -78,8 +85,6 @@ class ChapterList extends Component {
   };
 
   render() {
-    const deadline = Date.now() + 1000 * 60 * 60 * 24 * 2 + 1000 * 30; // Moment is also OK
-
     return (
       <Layout style={{ padding: "24px 20px", background: "#fff" }}>
         <PageHeader
@@ -98,7 +103,6 @@ class ChapterList extends Component {
                     Chapter {chapter.indexOfChapter}
                   </Link>
                 }
-                // description="Ant Design, a design language for background applications, is refined by Ant UED Team"
               />
               <Row gutter={16}>
                 <Col span={8}>
@@ -111,10 +115,10 @@ class ChapterList extends Component {
                   <Statistic title="Staked" value={`♦ ${chapter.staked}`} />
                 </Col>
                 <Col span={8}>
-                  {chapter.predictionMarket ? (
-                    <Countdown title="Countdown" value={deadline} />
-                  ) : (
+                  {chapter.isResolved ? (
                     <Statistic title="Countdown" value={0} />
+                  ) : (
+                    <Countdown title="Countdown" value={chapter.deadline} />
                   )}
                 </Col>
               </Row>
