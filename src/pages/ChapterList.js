@@ -30,6 +30,7 @@ class ChapterList extends Component {
     //fetch Book Chapters
 
     const that = this;
+    this.getAccountDetails();
 
     const bookId = this.props.match.params.id;
 
@@ -63,29 +64,6 @@ class ChapterList extends Component {
 
         that.setState({ listofChapters });
       });
-
-    // console.log(this.props);
-
-    //send this Id to backend to fetch book details;
-    // const title = "Harry Potter";
-
-    // //got chapters for this particular id
-
-    // const chapters = [
-    //   {
-    //     id: 1,
-    //     predictionMarket: false,
-    //     staked: 1000,
-    //     timeLeft: 0
-    //   },
-    //   {
-    //     id: 2,
-    //     predictionMarket: true,
-    //     staked: 1000,
-    //     timeLeft: 300
-    //   }
-    // ];
-    // this.setState({ title, chapters });
   }
 
   goBack = () => {
@@ -93,6 +71,7 @@ class ChapterList extends Component {
   };
 
   render() {
+    console.log(this.state);
     return (
       <Layout style={{ padding: "24px 20px", background: "#fff" }}>
         <PageHeader
