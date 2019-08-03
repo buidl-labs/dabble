@@ -4,27 +4,32 @@ import { Link } from "react-router-dom";
 
 //Styling
 import { Layout } from "antd";
-import { Row } from "antd";
+import { Row, Col } from "antd";
+import { PageHeader } from "antd";
+import { Spin } from "antd";
 
 //Custom Customponents
 import BookCard from "../components/BookCard";
 
 //Contracts
-import storyContractABI from "../utils/story";
+import { storyContract } from "../utils/utils";
 
-const storyContractAddress = "0x7307fa44848f9282954fd1bd04f3eef26afe52c9";
-
-const web3 = new Web3(
-  new Web3.providers.HttpProvider("https://testnet2.matic.network")
-);
-const storyContract = new web3.eth.Contract(
-  storyContractABI.abi,
-  storyContractAddress
-);
+const RenderBooksCard = ({ listOfBooks }) => {
+  return listOfBooks.length === 0 ? (
+    <h1>No Books found</h1>
+  ) : (
+    listOfBooks.map(book => (
+      <Link key={book.id} to={`/chapter-list/${book.id}`}>
+        <BookCard title={book.title} />
+      </Link>
+    ))
+  );
+};
 
 class BookList extends Component {
   state = {
-    listOfBooks: []
+    listOfBooks: [],
+    loaded: false
   };
 
   componentDidMount() {
@@ -34,15 +39,14 @@ class BookList extends Component {
       .getAllBooks()
       .call()
       .then(function(result) {
-        // console.log(result);
-        const listOfBooks = result.map((item, index) => {
+        const listOfBooks = result.map(book => {
           return {
-            id: index,
-            title: item
+            id: book.bookId,
+            title: book.name
           };
         });
 
-        that.setState({ listOfBooks });
+        that.setState({ listOfBooks, loaded: true });
       });
 
     // this.setState({ listOfBooks });
@@ -52,16 +56,17 @@ class BookList extends Component {
     console.log(this.state.listOfBooks);
     return (
       <Layout style={{ padding: "24px 20px", background: "#fff" }}>
-        <Row gutter={16}>
-          {console.log(this)}
-          {this.state.listOfBooks.length === 0 ? (
-            <h1>No Books found</h1>
+        <PageHeader
+          title="Book List 📚"
+          // subTitle="This is a subtitle"
+        />
+        <Row gutter={8}>
+          {this.state.loaded ? (
+            <RenderBooksCard listOfBooks={this.state.listOfBooks} />
           ) : (
-            this.state.listOfBooks.map(book => (
-              <Link key={book.id} to={`/book/:${book.id}`}>
-                <BookCard title={book.title} />
-              </Link>
-            ))
+            <Col span={24} style={{ textAlign: "center" }}>
+              <Spin />
+            </Col>
           )}
         </Row>
       </Layout>
