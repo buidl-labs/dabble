@@ -8,13 +8,9 @@ import { PageHeader } from "antd";
 import { List, Avatar, Icon } from "antd";
 import { Statistic } from "antd";
 
-import { storyContract, web3 } from "../utils/utils";
+import { storyContract, web3, calculateDeadline } from "../utils/utils";
 
 const { Countdown } = Statistic;
-
-const calculateDeadline = creationTime => {
-  return moment(parseInt(creationTime) * 1000).add(48, "h");
-};
 
 class ChapterList extends Component {
   state = {

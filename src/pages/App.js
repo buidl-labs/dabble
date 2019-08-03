@@ -4,9 +4,9 @@ import { Layout, Menu } from "antd";
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
 import BookList from "./BookList";
-import Chapter from "./Chapter";
 import PublishingMode from "./PublishingMode";
 import ChapterList from "./ChapterList";
+import SpecificChapterView from "./SpecificChapterView";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -30,7 +30,7 @@ class App extends Component {
           <Content style={{ padding: "50px 50px" }}>
             <Route path="/" exact component={BookList} />
             <Route path="/chapter-list/:id" component={ChapterList} />
-            <Route path="/chapter/:id" component={Chapter} />
+            <Route path="/chapter/:id" component={SpecificChapterView} />
             <Route path="/book-publish" component={PublishingMode} />
             <Route path="/chapter-publish" component={PublishingMode} />
           </Content>

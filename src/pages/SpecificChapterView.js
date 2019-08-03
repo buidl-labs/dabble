@@ -16,6 +16,9 @@ import { sampleContent } from "../utils/utils";
 import EnterStakingAmount from "../components/EnterStakingAmount";
 import ConfirmStakeModel from "../components/ConfirmStakeModel";
 
+//Contract
+import { storyContract, web3, calculateDeadline } from "../utils/utils";
+
 const { Paragraph, Title, Text } = Typography;
 const { Countdown } = Statistic;
 const { Header, Content, Footer, Sider } = Layout;
@@ -159,6 +162,7 @@ const UpdateReadingPanel = ({ updateReadStatus }) => {
 };
 
 const IncentivizeReadersPanel = ({
+  deadline,
   readingStatus,
   updateReadStatus,
   question,
@@ -169,8 +173,6 @@ const IncentivizeReadersPanel = ({
   isReaderIncentivizationProcessFinished,
   updateReaderIncentivizationProcessStatus
 }) => {
-  const deadline = Date.now() + 1000 * 60 * 60 * 24 * 2 + 1000 * 30; // Moment is also OK
-
   const showReaderApproriatePanel = readingStatus ? (
     <StakingPanel
       question={question}
@@ -201,58 +203,102 @@ const IncentivizeReadersPanel = ({
   );
 };
 
-class Book extends Component {
+class SpecificChapterView extends Component {
   state = {
-    bookTitle: "",
-    chapterId: "",
-    content: "",
-    read: false,
-    predictionMarket: false,
-    question: "",
-    stakedOn: true,
-    stakingAmount: "",
-    isReaderIncentivizationProcessFinished: false,
+    book: {
+      id: "",
+      title: ""
+    },
+    chapter: {
+      id: "",
+      title: "",
+      content: "",
+      isResolved: false,
+      question: "",
+      creationTime: "",
+      deadline: ""
+    },
+    reader: {
+      account: "",
+      isRead: false,
+      stakedOn: true,
+      stakedAmount: 0,
+      incentivizingProcessFinished: false
+    },
     resolutionDetails: {}
   };
 
+  async getAccountDetails() {
+    const address = await web3.eth.getAccounts();
+    this.setState(prevState => ({
+      ...prevState,
+      reader: {
+        ...prevState.reader,
+        account: address[0]
+      }
+    }));
+  }
+
   componentDidMount() {
     //fetch Book Chapters
-
+    const that = this;
     const chapterId = this.props.match.params.id;
 
-    const predictionMarket = false;
+    this.getAccountDetails();
+
+    storyContract.methods
+      .ChapterMapping(chapterId)
+      .call()
+      .then(chapter => {
+        console.log(chapter);
+
+        const bookDetails = {
+          id: chapter.bookId
+        };
+
+        const chapterDetails = {
+          id: chapterId,
+          indexOfChapter: chapterId + 1,
+          title: chapter.name,
+          content: chapter.content,
+          isResolved: chapter.isResolved,
+          staked: web3.utils.fromWei(chapter.bounty, "ether"),
+          question: chapter.question,
+          creationTime: chapter.creationTime,
+          deadline: calculateDeadline(chapter.creationTime)
+        };
+
+        that.setState(prevState => ({
+          ...prevState,
+          book: { ...bookDetails },
+          chapter: { ...chapterDetails }
+        }));
+      });
 
     //From chapter ID fetch book details
-    const chapterDetails = {
-      bookTitle: "Harry Potter",
-      chapterId,
-      content: sampleContent,
-      predictionMarket,
-      question: "Should I kill Harry Potter"
-    };
 
-    let resolutionDetails;
-    if (predictionMarket === false) {
-      //Fetch Resolution Panel Details
-      //Fetch your vote
-      //fetch community vote
-      //fetch your winnings
-      //fetch community winnings
-      resolutionDetails = {
-        yourVote: true,
-        communityVote: false,
-        yourWinnings: -5,
-        communityWinnings: 33
-      };
-    }
+    // let resolutionDetails;
+    // if (predictionMarket === false) {
+    //   //Fetch Resolution Panel Details
+    //   //Fetch your vote
+    //   //fetch community vote
+    //   //fetch your winnings
+    //   //fetch community winnings
+    //   resolutionDetails = {
+    //     yourVote: true,
+    //     communityVote: false,
+    //     yourWinnings: -5,
+    //     communityWinnings: 33
+    //   };
+    // }
 
     // console.log(sampleContent);
     //from chapter Id fetch chapter details
 
-    this.setState({
-      ...chapterDetails,
-      resolutionDetails
-    });
+    // this.setState({
+    //   ...chapterDetails,
+    //   resolutionDetails
+    // });
   }
 
   goBack = () => {
@@ -260,20 +306,68 @@ class Book extends Component {
   };
 
   updateReadStatus = () => {
-    this.setState({ read: true });
+    this.setState(prevState => ({
+      ...prevState,
+      reader: {
+        ...prevState.reader,
+        isRead: true
+      }
+    }));
   };
 
   updateStakeStatus = clickedOn => {
-    this.setState({ stakedOn: clickedOn });
+    console.log(clickedOn);
+    this.setState(prevState => ({
+      ...prevState,
+      reader: {
+        ...prevState.reader,
+        stakedOn: clickedOn
+      }
+    }));
+    // this.setState({ stakedOn: clickedOn });
   };
 
   updateStakingAmount = amount => {
     console.log(amount);
-    this.setState({ stakingAmount: amount });
+    this.setState(prevState => ({
+      ...prevState,
+      reader: {
+        ...prevState.reader,
+        stakedAmount: amount
+      }
+    }));
   };
 
   updateReaderIncentivizationProcessStatus = status => {
-    this.setState({ isReaderIncentivizationProcessFinished: status });
+    //Do Payment
+
+    const that = this;
+
+    console.log(this.state);
+
+    const chapterId = this.state.chapter.id;
+    const vote = this.state.reader.stakedOn;
+    const amountStakedOnVote = this.state.reader.stakedAmount;
+    const userAccount = this.state.reader.account;
+
+    // storyContract.methods
+    //   .voteForFollowup(chapterId, vote)
+    //   .send({
+    //     from: userAccount,
+    //     value: web3.utils.toWei(amountStakedOnVote, "ether")
+    //   })
+    //   .then(function(receipt) {
+    //     console.log(receipt);
+
+    //   });
+
+    this.setState(prevState => ({
+      ...prevState,
+      reader: {
+        ...prevState.reader,
+        incentivizingProcessFinished: status
+      }
+    }));
   };
 
   render() {
@@ -283,8 +377,8 @@ class Book extends Component {
           <Col span={24}>
             <PageHeader
               onBack={() => this.goBack()}
-              title={this.state.bookTitle}
-              subTitle={`Chapter: ${this.state.chapterId}`}
+              title={this.state.book.title}
+              subTitle={`Chapter: ${this.state.chapter.indexOfChapter}`}
             />
           </Col>
         </Row>
@@ -293,7 +387,7 @@ class Book extends Component {
         <Row>
           <Col span={24} style={{ marginBottom: 20 }}>
             <Typography>
-              <Paragraph>{this.state.content}</Paragraph>
+              <Paragraph>{this.state.chapter.content}</Paragraph>
             </Typography>
           </Col>
           <Divider />
@@ -301,26 +395,27 @@ class Book extends Component {
 
         {/* Prediction Market True == Incentivizing Panel, False === Resolution Panel */}
 
-        {this.state.predictionMarket ? (
-          <IncentivizeReadersPanel
-            readingStatus={this.state.read}
-            updateReadStatus={this.updateReadStatus}
+        {this.state.chapter.isResolved ? (
+          <MarketResolvedPanel
             question={this.state.question}
-            stakedOn={this.state.stakedOn}
+            resolutionDetails={this.state.resolutionDetails}
+          />
+        ) : (
+          <IncentivizeReadersPanel
+            deadline={this.state.chapter.deadline}
+            readingStatus={this.state.reader.isRead}
+            updateReadStatus={this.updateReadStatus}
+            question={this.state.chapter.question}
+            stakedOn={this.state.reader.stakedOn}
             updateStakeStatus={this.updateStakeStatus} // Voted on Yes or No
-            stakedAmount={this.state.stakingAmount}
+            stakedAmount={this.state.reader.stakedAmount}
             updateStakingAmount={this.updateStakingAmount}
             isReaderIncentivizationProcessFinished={
-              this.state.isReaderIncentivizationProcessFinished
+              this.state.reader.incentivizingProcessFinished
             } //Has the user voted or not
             updateReaderIncentivizationProcessStatus={
               this.updateReaderIncentivizationProcessStatus
             }
-          />
-        ) : (
-          <MarketResolvedPanel
-            question={this.state.question}
-            resolutionDetails={this.state.resolutionDetails}
           />
         )}
       </Layout>
@@ -328,4 +423,4 @@ class Book extends Component {
   }
 }
 
-export default Book;
+export default SpecificChapterView;

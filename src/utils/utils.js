@@ -1,5 +1,6 @@
 import storyContractABI from "./story";
 import Web3 from "web3";
+import moment from "moment";
 
 export const sampleContent = `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Odio euismod lacinia at quis risus sed vulputate. Vitae sapien pellentesque habitant morbi. Vitae nunc sed velit dignissim. Non diam phasellus vestibulum lorem. Ut faucibus pulvinar elementum integer enim. Duis at tellus at urna condimentum mattis pellentesque id nibh. Dolor sit amet consectetur adipiscing elit. Dui ut ornare lectus sit. Dictumst vestibulum rhoncus est pellentesque. Auctor elit sed vulputate mi sit amet mauris. Egestas tellus rutrum tellus pellentesque eu.
 
@@ -11,11 +12,76 @@ Feugiat in fermentum posuere urna nec tincidunt praesent semper. Condimentum id 
 
 const storyContractAddress = "0xf736ff046ff92f3ad00a83830fa4c64ba026afdb";
 
-export const web3 = new Web3(
-  new Web3.providers.HttpProvider("https://testnet2.matic.network")
-);
+export const calculateDeadline = creationTime => {
+  return moment(parseInt(creationTime) * 1000).add(48, "h");
+};
+
+const setProvider = () => {
+  console.log("Function run");
+  let web3;
+  if (window.ethereum) {
+    web3 = new Web3(window.ethereum);
+    try {
+      window.ethereum.enable().then(function(x, y) {
+        // console.log(x);
+        // console.log(y);
+        // User has allowed account access to DApp...
+      });
+    } catch (e) {
+      console.log(e);
+      // User has denied account access to DApp...
+    }
+  }
+  // Legacy DApp Browsers
+  else if (window.web3) {
+    console.log("Reached here");
+    web3 = new Web3(web3.currentProvider);
+  }
+  // Non-DApp Browsers
+  else {
+    alert("You have to install MetaMask !");
+  }
+
+  return web3;
+};
+
+export const web3 = setProvider();
 
 export const storyContract = new web3.eth.Contract(
   storyContractABI.abi,
   storyContractAddress
 );
+
+// async function getAccountDetails() {
+//   return await web3.eth.getAccounts()[0];
+// }
+
+// export const ETH_ADDRESS = getAccountDetails();
+
+// export const fetchAccounts = () => {
+//   return new Promise((resolve, reject) => {
+//     const { web3 } = window;
+//     const ethAccounts = getAccounts();
+
+//     if (isEmpty(ethAccounts)) {
+//       web3 && web3.eth && web3.eth.getAccounts((err, accounts) => {
+//         if (err) {
+//           reject(err);
+//         } else {
+//           resolve(accounts);
+//         }
+//       });
+//     } else {
+//       resolve(ethAccounts);
+//     }
+//   });
+// };
+
+// function getAccounts() {
+//   try {
+//     const { web3 } = window;
+//     // throws if no account selected
+//     return web3.eth.accounts;
+//   } catch (e) {
+//     return [];
+// }
