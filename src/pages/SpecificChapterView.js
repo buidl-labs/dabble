@@ -250,8 +250,6 @@ class SpecificChapterView extends Component {
       .ChapterMapping(chapterId)
       .call()
       .then(chapter => {
-        console.log(chapter);
-
         const bookDetails = {
           id: chapter.bookId
         };
@@ -273,6 +271,13 @@ class SpecificChapterView extends Component {
           book: { ...bookDetails },
           chapter: { ...chapterDetails }
         }));
+      });
+
+    storyContract.methods
+      .hasRead(chapterId)
+      .call()
+      .then(result => {
+        console.log(result);
       });
 
     //From chapter ID fetch book details
@@ -306,13 +311,25 @@ class SpecificChapterView extends Component {
   };
 
   updateReadStatus = () => {
-    this.setState(prevState => ({
-      ...prevState,
-      reader: {
-        ...prevState.reader,
-        isRead: true
-      }
-    }));
+    const that = this;
+    const chapterId = this.state.chapter.id;
+    const userAccount = this.state.reader.account;
+
+    storyContract.methods
+      .readChapter(chapterId)
+      .send({
+        from: userAccount
+      })
+      .then(function(receipt) {
+        console.log(receipt);
+        that.setState(prevState => ({
+          ...prevState,
+          reader: {
+            ...prevState.reader,
+            isRead: true
+          }
+        }));
+      });
   };
 
   updateStakeStatus = clickedOn => {
@@ -350,24 +367,23 @@ class SpecificChapterView extends Component {
     const amountStakedOnVote = this.state.reader.stakedAmount;
     const userAccount = this.state.reader.account;
 
-    // storyContract.methods
-    //   .voteForFollowup(chapterId, vote)
-    //   .send({
-    //     from: userAccount,
-    //     value: web3.utils.toWei(amountStakedOnVote, "ether")
-    //   })
-    //   .then(function(receipt) {
-    //     console.log(receipt);
+    storyContract.methods
+      .voteForFollowup(chapterId, vote)
+      .send({
+        from: userAccount,
+        value: web3.utils.toWei(amountStakedOnVote, "ether")
+      })
+      .then(function(receipt) {
+        console.log(receipt);
 
-    //   });
-
-    this.setState(prevState => ({
-      ...prevState,
-      reader: {
-        ...prevState.reader,
-        incentivizingProcessFinished: status
-      }
-    }));
+        that.setState(prevState => ({
+          ...prevState,
+          reader: {
+            ...prevState.reader,
+            incentivizingProcessFinished: status
+          }
+        }));
+      });
   };
 
   render() {

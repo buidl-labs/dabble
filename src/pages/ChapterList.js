@@ -5,7 +5,7 @@ import moment from "moment";
 import { Layout } from "antd";
 import { Row, Col } from "antd";
 import { PageHeader } from "antd";
-import { List, Avatar, Icon } from "antd";
+import { List, Avatar, Icon, Button } from "antd";
 import { Statistic } from "antd";
 
 import { storyContract, web3, calculateDeadline } from "../utils/utils";
@@ -14,9 +14,17 @@ const { Countdown } = Statistic;
 
 class ChapterList extends Component {
   state = {
+    author: "",
+    reader: "",
     title: "",
+    bookId: "",
     listofChapters: []
   };
+
+  async getAccountDetails() {
+    const address = await web3.eth.getAccounts();
+    this.setState({ reader: address[0] });
+  }
 
   componentDidMount() {
     //fetch Book Chapters
@@ -28,14 +36,19 @@ class ChapterList extends Component {
     storyContract.methods
       .bookIdMapping(bookId)
       .call()
-      .then(result => that.setState({ title: result.name }));
+      .then(result => {
+        console.log(result);
+        that.setState({
+          title: result.name,
+          author: result.authorId,
+          bookId: result.bookId
+        });
+      });
 
     storyContract.methods
       .getAllChapterBooks(bookId)
       .call()
       .then(function(result) {
-        console.log(result);
-
         const listofChapters = result.map((chapter, index) => {
           return {
             id: index,
@@ -48,7 +61,6 @@ class ChapterList extends Component {
           };
         });
 
-        console.log(listofChapters);
         that.setState({ listofChapters });
       });
 
@@ -121,6 +133,15 @@ class ChapterList extends Component {
             </List.Item>
           )}
         />
+
+        {this.state.author === this.state.reader ? (
+          <Link
+            to={`/chapter-publish/${this.state.bookId}`}
+            style={{ margin: 50, textAlign: "center" }}
+          >
+            <Button type="primary">Create a new chapter!</Button>
+          </Link>
+        ) : null}
       </Layout>
     );
   }

@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 
 import BookList from "./BookList";
 import PublishingMode from "./PublishingMode";
+import PublishingModeChapter from "./PublishingModeChapter";
 import ChapterList from "./ChapterList";
 import SpecificChapterView from "./SpecificChapterView";
 
@@ -12,8 +13,6 @@ const { Header, Content, Footer, Sider } = Layout;
 
 class App extends Component {
   render() {
-    // const path = this.props;
-    // console.log(path);
     return (
       <Router>
         <Layout>
@@ -32,7 +31,10 @@ class App extends Component {
             <Route path="/chapter-list/:id" component={ChapterList} />
             <Route path="/chapter/:id" component={SpecificChapterView} />
             <Route path="/book-publish" component={PublishingMode} />
-            <Route path="/chapter-publish" component={PublishingMode} />
+            <Route
+              path="/chapter-publish/:bookId"
+              component={PublishingModeChapter}
+            />
           </Content>
           <Footer style={{ textAlign: "center" }}>
             Built on Matic & Ethereum with ❤

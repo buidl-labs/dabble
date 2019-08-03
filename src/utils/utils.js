@@ -10,7 +10,7 @@ Ornare aenean euismod elementum nisi quis eleifend quam. Aliquam faucibus purus 
 
 Feugiat in fermentum posuere urna nec tincidunt praesent semper. Condimentum id venenatis a condimentum vitae sapien pellentesque habitant. In arcu cursus euismod quis viverra nibh cras pulvinar. Leo vel orci porta non pulvinar. In ornare quam viverra orci. Risus in hendrerit gravida rutrum quisque non. Morbi tristique senectus et netus. Quam elementum pulvinar etiam non quam lacus. Cursus vitae congue mauris rhoncus aenean. Tortor posuere ac ut consequat. Platea dictumst vestibulum rhoncus est pellentesque elit ullamcorper.`;
 
-const storyContractAddress = "0xf736ff046ff92f3ad00a83830fa4c64ba026afdb";
+const storyContractAddress = "0xfe97c380675e7d2073235623e9e43f7e89a61324";
 
 export const calculateDeadline = creationTime => {
   return moment(parseInt(creationTime) * 1000).add(48, "h");

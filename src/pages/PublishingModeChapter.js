@@ -11,13 +11,28 @@ import { storyContract, web3, calculateDeadline } from "../utils/utils";
 
 const { TextArea } = Input;
 
-class PublisherMode extends React.Component {
+class PublishingModeChapter extends React.Component {
   state = {
-    author: ""
+    author: "",
+    bookTitle: "",
+    bookId: ""
   };
 
   componentDidMount() {
-    this.getAccountDetails();
+    const that = this;
+    const { bookId } = this.props.match.params;
+
+    storyContract.methods
+      .bookIdMapping(bookId)
+      .call()
+      .then(result => {
+        console.log(result);
+        that.setState({
+          bookTitle: result.name,
+          author: result.authorId,
+          bookId: result.bookId
+        });
+      });
   }
 
   async getAccountDetails() {
@@ -26,24 +41,11 @@ class PublisherMode extends React.Component {
   }
 
   handleSubmit = e => {
+    console.log(this.state);
+    e.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        // storyContract.methods
-        // .createBook(chapterId, vote)
-        // .send({
-        //   from: userAccount,
-        //   value: web3.utils.toWei(amountStakedOnVote, "ether")
-        // })
-        // .then(function(receipt) {
-        //   console.log(receipt);
-        //   that.setState(prevState => ({
-        //     ...prevState,
-        //     reader: {
-        //       ...prevState.reader,
-        //       incentivizingProcessFinished: status
-        //     }
-        //   }));
-        // });
+        console.log("Received values of form: ", values);
       }
     });
   };
@@ -55,31 +57,20 @@ class PublisherMode extends React.Component {
   render() {
     const { getFieldDecorator } = this.props.form;
 
+    console.log(this.props.match.params);
+
     return (
       <Layout style={{ padding: "24px 20px", background: "#fff" }}>
         <Row>
           <Col span={24}>
             <PageHeader
               onBack={() => this.goBack()}
-              title="Write your next dream book!"
+              title="Write your next chapter:"
             />
           </Col>
         </Row>
         <Form onSubmit={this.handleSubmit} hideRequiredMark={true}>
-          <Form.Item label="Enter book's title: ">
-            {getFieldDecorator("bookTitle", {
-              rules: [
-                {
-                  type: "string",
-                  message: ""
-                },
-                {
-                  required: true,
-                  message: "Please input your book title!"
-                }
-              ]
-            })(<Input />)}
-          </Form.Item>
+          <Form.Item label="Book's title: ">{this.state.bookTitle}</Form.Item>
           <Form.Item label="Enter chapter's title: ">
             {getFieldDecorator("chapter", {
               rules: [
@@ -153,6 +144,8 @@ class PublisherMode extends React.Component {
   }
 }
 
-const WrappedPublisherMode = Form.create({ name: "register" })(PublisherMode);
+const WrappedPublishingModeChapter = Form.create({ name: "register" })(
+  PublishingModeChapter
+);
 
-export default WrappedPublisherMode;
+export default WrappedPublishingModeChapter;

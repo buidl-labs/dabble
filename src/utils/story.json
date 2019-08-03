@@ -122,6 +122,20 @@
       "constant": false,
       "inputs": [
         {
+          "name": "minimumAmount",
+          "type": "uint256"
+        }
+      ],
+      "name": "setChapterMinStake",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
           "name": "_chapterId",
           "type": "uint256"
         },
@@ -135,6 +149,12 @@
       "payable": true,
       "stateMutability": "payable",
       "type": "function"
+    },
+    {
+      "inputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor"
     },
     {
       "anonymous": false,
@@ -159,12 +179,12 @@
         {
           "indexed": false,
           "name": "bookName",
-          "type": "uint256"
+          "type": "string"
         },
         {
           "indexed": false,
           "name": "userName",
-          "type": "uint256"
+          "type": "string"
         }
       ],
       "name": "HasReadBook",
@@ -309,6 +329,10 @@
           "type": "uint256"
         },
         {
+          "name": "chapterId",
+          "type": "uint256"
+        },
+        {
           "name": "name",
           "type": "string"
         },
@@ -426,6 +450,10 @@
               "type": "uint256"
             },
             {
+              "name": "chapterId",
+              "type": "uint256"
+            },
+            {
               "name": "name",
               "type": "string"
             },
@@ -464,6 +492,44 @@
           ],
           "name": "",
           "type": "tuple[]"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "chapterId_",
+          "type": "uint256"
+        }
+      ],
+      "name": "hasRead",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_chapterId",
+          "type": "uint256"
+        }
+      ],
+      "name": "hasVoted",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
         }
       ],
       "payable": false,
