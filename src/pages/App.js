@@ -32,7 +32,9 @@ class App extends Component {
             <Route path="/book/:id" component={Book} />
             <Route path="/chapter/:id" component={Chapter} />
           </Content>
-          <Footer style={{ textAlign: "center" }}>Built with ♥</Footer>
+          <Footer style={{ textAlign: "center" }}>
+            Built on Matic & Ethereum with ❤
+          </Footer>
         </Layout>
       </Router>
     );
