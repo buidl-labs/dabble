@@ -9,7 +9,7 @@ import PublishingModeChapter from "./PublishingModeChapter";
 import ChapterList from "./ChapterList";
 import SpecificChapterView from "./SpecificChapterView";
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Header, Content, Footer } = Layout;
 
 class App extends Component {
   render() {
@@ -20,7 +20,12 @@ class App extends Component {
             <Link to={"/"}>
               <div className="logo">Dabble</div>
             </Link>
-            <Menu theme="dark" mode="horizontal" style={{ lineHeight: "64px" }}>
+            <Menu
+              theme="dark"
+              mode="horizontal"
+              selectable={false}
+              style={{ lineHeight: "64px" }}
+            >
               <Menu.Item key="1">
                 <Link to={"/book-publish"}>Publish a book!</Link>
               </Menu.Item>
@@ -29,7 +34,10 @@ class App extends Component {
           <Content style={{ padding: "50px 50px" }}>
             <Route path="/" exact component={BookList} />
             <Route path="/chapter-list/:id" component={ChapterList} />
-            <Route path="/chapter/:id" component={SpecificChapterView} />
+            <Route
+              path="/chapter/:bookId/:chapterId"
+              component={SpecificChapterView}
+            />
             <Route path="/book-publish" component={PublishingMode} />
             <Route
               path="/chapter-publish/:bookId"

@@ -3,16 +3,13 @@ import React, { Component } from "react";
 //Styling
 import { Layout } from "antd";
 import { Row, Col } from "antd";
-import BookCard from "../components/BookCard";
 import { PageHeader } from "antd";
-import { List, Avatar, Icon } from "antd";
 import { Statistic } from "antd";
 import { Typography, Divider } from "antd";
-import { Card } from "antd";
 import { Button } from "antd";
 
 //Internal Components
-import { sampleContent } from "../utils/utils";
+
 import EnterStakingAmount from "../components/EnterStakingAmount";
 import ConfirmStakeModel from "../components/ConfirmStakeModel";
 
@@ -21,7 +18,6 @@ import { storyContract, web3, calculateDeadline } from "../utils/utils";
 
 const { Paragraph, Title, Text } = Typography;
 const { Countdown } = Statistic;
-const { Header, Content, Footer, Sider } = Layout;
 const ButtonGroup = Button.Group;
 
 const MarketResolvedPanel = ({ question, resolutionDetails }) => (
@@ -203,11 +199,32 @@ const IncentivizeReadersPanel = ({
   );
 };
 
+const AuthorStatusPanel = ({ deadline, question }) => {
+  return (
+    <Row gutter={16}>
+      <Col span={24}>
+        <Typography style={{ textAlign: "center" }}>
+          <Text strong>Voting under way!</Text>
+        </Typography>
+      </Col>
+      <Col span={24} style={{ marginTop: 24, textAlign: "center" }}>
+        <Typography>
+          <Title level={4}>{question} in the next chapter?</Title>
+        </Typography>
+      </Col>
+      <Col span={24} style={{ marginTop: 24, textAlign: "center" }}>
+        <Countdown title="Time Remaining" value={deadline} />
+      </Col>
+    </Row>
+  );
+};
+
 class SpecificChapterView extends Component {
   state = {
     book: {
       id: "",
-      title: ""
+      title: "",
+      author: ""
     },
     chapter: {
       id: "",
@@ -225,6 +242,10 @@ class SpecificChapterView extends Component {
       stakedAmount: 0,
       incentivizingProcessFinished: false
     },
+    statusCheck: {
+      readCheck: false,
+      votedCheck: false
+    },
     resolutionDetails: {}
   };
 
@@ -239,12 +260,13 @@ class SpecificChapterView extends Component {
     }));
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     //fetch Book Chapters
     const that = this;
-    const chapterId = this.props.match.params.id;
 
-    this.getAccountDetails();
+    const chapterId = this.props.match.params.chapterId;
+
+    await this.getAccountDetails();
 
     storyContract.methods
       .ChapterMapping(chapterId)
@@ -256,7 +278,7 @@ class SpecificChapterView extends Component {
 
         const chapterDetails = {
           id: chapterId,
-          indexOfChapter: chapterId + 1,
+          indexOfChapter: parseInt(chapterId) + 1,
           title: chapter.name,
           content: chapter.content,
           isResolved: chapter.isResolved,
@@ -275,9 +297,36 @@ class SpecificChapterView extends Component {
 
     storyContract.methods
       .hasRead(chapterId)
-      .call()
+      .call({ from: this.state.reader.account })
       .then(result => {
-        console.log(result);
+        that.setState(prevState => ({
+          ...prevState,
+          reader: {
+            ...prevState.reader,
+            isRead: result
+          },
+          statusCheck: {
+            ...prevState.statusCheck,
+            readCheck: true
+          }
+        }));
+      });
+
+    storyContract.methods
+      .hasVoted(chapterId)
+      .call({ from: this.state.reader.account })
+      .then(result => {
+        that.setState(prevState => ({
+          ...prevState,
+          reader: {
+            ...prevState.reader,
+            incentivizingProcessFinished: result
+          },
+          statusCheck: {
+            ...prevState.statusCheck,
+            votedCheck: true
+          }
+        }));
       });
 
     //From chapter ID fetch book details
@@ -306,6 +355,26 @@ class SpecificChapterView extends Component {
     // });
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.book.id !== this.state.book.id) {
+      const that = this;
+      storyContract.methods
+        .bookIdMapping(this.state.book.id)
+        .call()
+        .then(result => {
+          // console.log(result);
+          that.setState(prevState => ({
+            ...prevState,
+            book: {
+              ...prevState.book,
+              title: result.name,
+              author: result.authorId
+            }
+          }));
+        });
+    }
+  }
+
   goBack = () => {
     this.props.history.goBack();
   };
@@ -321,7 +390,7 @@ class SpecificChapterView extends Component {
         from: userAccount
       })
       .then(function(receipt) {
-        console.log(receipt);
+        // console.log(receipt);
         that.setState(prevState => ({
           ...prevState,
           reader: {
@@ -333,7 +402,7 @@ class SpecificChapterView extends Component {
   };
 
   updateStakeStatus = clickedOn => {
-    console.log(clickedOn);
+    // console.log(clickedOn);
     this.setState(prevState => ({
       ...prevState,
       reader: {
@@ -367,6 +436,7 @@ class SpecificChapterView extends Component {
     const amountStakedOnVote = this.state.reader.stakedAmount;
     const userAccount = this.state.reader.account;
 
+    console.log(amountStakedOnVote);
     storyContract.methods
       .voteForFollowup(chapterId, vote)
       .send({
@@ -386,6 +456,41 @@ class SpecificChapterView extends Component {
       });
   };
 
+  renderIncentivedReadingPanel = () => {
+    if (this.state.book.author === this.state.reader.account) {
+      return (
+        <AuthorStatusPanel
+          deadline={this.state.chapter.deadline}
+          question={this.state.chapter.question}
+        />
+      );
+    } else {
+      if (
+        this.state.statusCheck.readCheck === true &&
+        this.state.statusCheck.votedCheck === true
+      ) {
+        return (
+          <IncentivizeReadersPanel
+            deadline={this.state.chapter.deadline}
+            readingStatus={this.state.reader.isRead}
+            updateReadStatus={this.updateReadStatus}
+            question={this.state.chapter.question}
+            stakedOn={this.state.reader.stakedOn}
+            updateStakeStatus={this.updateStakeStatus} // Voted on Yes or No
+            stakedAmount={this.state.reader.stakedAmount}
+            updateStakingAmount={this.updateStakingAmount}
+            isReaderIncentivizationProcessFinished={
+              this.state.reader.incentivizingProcessFinished
+            } //Has the user voted or not
+            updateReaderIncentivizationProcessStatus={
+              this.updateReaderIncentivizationProcessStatus
+            }
+          />
+        );
+      }
+    }
+  };
+
   render() {
     return (
       <Layout style={{ padding: "24px 20px", background: "#fff" }}>
@@ -394,7 +499,9 @@ class SpecificChapterView extends Component {
             <PageHeader
               onBack={() => this.goBack()}
               title={this.state.book.title}
-              subTitle={`Chapter: ${this.state.chapter.indexOfChapter}`}
+              subTitle={`Chapter ${this.state.chapter.indexOfChapter}:${
+                this.state.chapter.title
+              } `}
             />
           </Col>
         </Row>
@@ -417,22 +524,7 @@ class SpecificChapterView extends Component {
             resolutionDetails={this.state.resolutionDetails}
           />
         ) : (
-          <IncentivizeReadersPanel
-            deadline={this.state.chapter.deadline}
-            readingStatus={this.state.reader.isRead}
-            updateReadStatus={this.updateReadStatus}
-            question={this.state.chapter.question}
-            stakedOn={this.state.reader.stakedOn}
-            updateStakeStatus={this.updateStakeStatus} // Voted on Yes or No
-            stakedAmount={this.state.reader.stakedAmount}
-            updateStakingAmount={this.updateStakingAmount}
-            isReaderIncentivizationProcessFinished={
-              this.state.reader.incentivizingProcessFinished
-            } //Has the user voted or not
-            updateReaderIncentivizationProcessStatus={
-              this.updateReaderIncentivizationProcessStatus
-            }
-          />
+          this.renderIncentivedReadingPanel()
         )}
       </Layout>
     );

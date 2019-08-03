@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import Web3 from "web3";
 import { Link } from "react-router-dom";
 
 //Styling
@@ -53,7 +52,7 @@ class BookList extends Component {
   }
 
   render() {
-    console.log(this.state.listOfBooks);
+    // console.log(this.state.listOfBooks);
     return (
       <Layout style={{ padding: "24px 20px", background: "#fff" }}>
         <PageHeader

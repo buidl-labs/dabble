@@ -1,11 +1,10 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import moment from "moment";
 //Styling
 import { Layout } from "antd";
 import { Row, Col } from "antd";
 import { PageHeader } from "antd";
-import { List, Avatar, Icon, Button } from "antd";
+import { List, Button } from "antd";
 import { Statistic } from "antd";
 
 import { storyContract, web3, calculateDeadline } from "../utils/utils";
@@ -38,7 +37,6 @@ class ChapterList extends Component {
       .bookIdMapping(bookId)
       .call()
       .then(result => {
-        console.log(result);
         that.setState({
           title: result.name,
           author: result.authorId,
@@ -52,7 +50,7 @@ class ChapterList extends Component {
       .then(function(result) {
         const listofChapters = result.map((chapter, index) => {
           return {
-            id: index,
+            id: chapter.chapterId,
             indexOfChapter: index + 1,
             chapterName: chapter.name,
             isResolved: chapter.isResolved,
@@ -71,7 +69,7 @@ class ChapterList extends Component {
   };
 
   render() {
-    console.log(this.state);
+    // console.log(this.state);
     return (
       <Layout style={{ padding: "24px 20px", background: "#fff" }}>
         <PageHeader
@@ -86,8 +84,8 @@ class ChapterList extends Component {
             <List.Item style={{ marginLeft: 50, marginRight: 50 }}>
               <List.Item.Meta
                 title={
-                  <Link to={`/chapter/${chapter.id}`}>
-                    Chapter {chapter.indexOfChapter}
+                  <Link to={`/chapter/${this.state.bookId}/${chapter.id}`}>
+                    Chapter {chapter.indexOfChapter}: {chapter.chapterName}
                   </Link>
                 }
               />

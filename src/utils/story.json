@@ -54,6 +54,10 @@
         {
           "name": "_authorPreference",
           "type": "bool"
+        },
+        {
+          "name": "bookName",
+          "type": "string"
         }
       ],
       "name": "createChapter",
