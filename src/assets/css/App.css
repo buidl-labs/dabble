@@ -1,4 +1,11 @@
 @import "~antd/dist/antd.css";
+
+.logo {
+  width: calc(100vw * 0.75);
+  color: white;
+  font-size: 16px;
+  float: left;
+}
 /* 
 .App {
   text-align: center;
