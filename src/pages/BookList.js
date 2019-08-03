@@ -1,37 +1,50 @@
 import React, { Component } from "react";
+import Web3 from "web3";
+import { Link } from "react-router-dom";
+
+//Styling
 import { Layout } from "antd";
 import { Row } from "antd";
+
+//Custom Customponents
 import BookCard from "../components/BookCard";
-import { Link } from "react-router-dom";
-import Web3 from "web3";
+
+//Contracts
 import storyContractABI from "../utils/story";
 
+const storyContractAddress = "0x7307fa44848f9282954fd1bd04f3eef26afe52c9";
 
-let storyContractAddress =  '0x7307fa44848f9282954fd1bd04f3eef26afe52c9';
-
-var web3 = new Web3(new Web3.providers.HttpProvider('https://testnet2.matic.network'));
-var storyContract = new web3.eth.Contract(storyContractABI.abi, storyContractAddress);
-
+const web3 = new Web3(
+  new Web3.providers.HttpProvider("https://testnet2.matic.network")
+);
+const storyContract = new web3.eth.Contract(
+  storyContractABI.abi,
+  storyContractAddress
+);
 
 class BookList extends Component {
   state = {
     listOfBooks: []
   };
 
-  async componentDidMount() {
-    let self = this;
-     storyContract.methods.getAllBooks().call().then(function(result) {
-      // console.log(result);
-      let listOfAuthoredBooks = []
-      for(let i=0, len=result.length; i< len; i++)
-        listOfAuthoredBooks.push({
-          id: i+1,
-          title: result[i]
-        })
-        console.log(listOfAuthoredBooks);
-      self.setState({listOfBooks:listOfAuthoredBooks});
-    })
-    
+  componentDidMount() {
+    const that = this;
+
+    storyContract.methods
+      .getAllBooks()
+      .call()
+      .then(function(result) {
+        // console.log(result);
+        const listOfBooks = result.map((item, index) => {
+          return {
+            id: index,
+            title: item
+          };
+        });
+
+        that.setState({ listOfBooks });
+      });
+
     // this.setState({ listOfBooks });
   }
 

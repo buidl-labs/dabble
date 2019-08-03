@@ -7,9 +7,7 @@ const BookCard = ({ title }) => (
     title={title}
     bordered={true}
     hoverable={true}
-  >
-    Card content
-  </Card>
+  />
 );
 
 export default BookCard;
