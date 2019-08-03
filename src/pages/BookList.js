@@ -20,28 +20,16 @@ class BookList extends Component {
 
   async componentDidMount() {
     let self = this;
-    // var listOfBooks = [
-    //   {
-    //     id: 1,
-    //     title: "Harry Potter"
-    //   },
-    //   { id: 2, title: "Sapiens" },
-    //   { id: 3, title: "How to win friends!" }
-    // ];
-
      storyContract.methods.getAllBooks().call().then(function(result) {
       // console.log(result);
-      self.listOfBooks = [{
-        id: 1,
-        title: "Harry Potter"
-      }]
+      let listOfAuthoredBooks = []
       for(let i=0, len=result.length; i< len; i++)
-        self.listOfBooks.push({
+        listOfAuthoredBooks.push({
           id: i+1,
           title: result[i]
         })
-        console.log(self.listOfBooks);
-      self.setState(self.listOfBooks);
+        console.log(listOfAuthoredBooks);
+      self.setState({listOfBooks:listOfAuthoredBooks});
     })
     
     // this.setState({ listOfBooks });
