@@ -3,14 +3,26 @@
 A wordplay on dabbling into blogging + decentralized autonomous blogging platform. 
 Visit live demo at https://dabble.surge.sh/_
 
+"Don’t debate people in the media when you can debate them in the marketplace." - Naval Ravikant. 
+
 ## Ideation
+
+Eli5: 
+* Writes want to get smaller feedback loops around their ideas. 
+* Readers want to support their creators work (+ earn some money on the side). 
+
+Roles: 
+* Writer incentivizes readers to read by putting in some token amount as skin in the game. 
+* Readers jump on the opportunity on making some money on the side and give feedback based on their risk apepetite. 
+* For feedback each chapter is a round where an author gives out the next possible storylines. Then the platform runs a prediction market on top of it. 
+
 
 We wanted to combine the following powers:
 * Of the benefits of blockchains: open, permisionless, censorship resistant. 
 * Of the benefits of Matic: 
   * small micropayments and bulk transactions.
   * Multiple markets may resolve at the same time. 
-* Of the power of decentralized writing communities like Wikipedia and combined with the ideas from game theory. 
+* Of the power of decentralized writing communities like Wikipedia and combined with the ideas from game and market theory. 
 
 ## Market Validation
 * China: 
@@ -23,13 +35,13 @@ We wanted to combine the following powers:
    * https://www.qwertythoughts.com/
  
 
-Why blockchain? 
-Global permisionless market. See how well films like Dangal & Andhadhun have performed in the chinese market, Narcos performing in Indian market. 
+See how well films like Dangal & Andhadhun have performed in the chinese market, Narcos performing in Indian market. 
 
 
-Difference from Augur: 
-* The game theroy probably doesn't incentivize the underdog.
-* Specialized for online publishing industry. 
+How are we different from Augur: 
+* Liquidity problem as Augur suffers from chicken and egg problem + behavorial changes around prediction markets. We take an already existing behavoir and improve on that. The tech problems Augur faces around scaling, high transaction costs get solved by using Matic Network. 
+* Specialized for online content industry. 
+* The game theory in all these prediction market platforms probably doesn't incentivize the underdog.
 
 
 ## Spec Sheet: 
@@ -85,9 +97,7 @@ Incentives:
         * Bot prevention:
             * Captcha
     * 95% reward is split for incentive on feedback.
-
-
-
+`
 
 Example:
 
@@ -211,4 +221,17 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 The build is minified and the filenames include the hashes.<br>
 The app is ready to be deployed!
+
+
+## Long term focus: 
+
+Product Side
+* Somehow people get tokens for early book launches and then they partake in books sales that happen later. 
+* Book forking: allow diversity in consensus. Books are opinionated in creative work. 
+
+Tech Side: 
+* Privacy on votes. 
+* Time based resoluton of the market on chain. 
+* IPFS integration for content
+
 
