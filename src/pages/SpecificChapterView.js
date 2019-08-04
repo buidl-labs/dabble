@@ -204,7 +204,7 @@ const IncentivizeReadersPanel = ({
   );
 };
 
-const AuthorStatusPanel = ({ deadline, question }) => {
+const AuthorStatusPanel = ({ deadline, question, resolveTheMarket }) => {
   return (
     <Row gutter={16}>
       <Col span={24}>
@@ -218,7 +218,11 @@ const AuthorStatusPanel = ({ deadline, question }) => {
         </Typography>
       </Col>
       <Col span={24} style={{ marginTop: 24, textAlign: "center" }}>
-        <Countdown title="Time Remaining" value={deadline} />
+        <Countdown
+          title="Time Remaining"
+          value={deadline}
+          onFinish={resolveTheMarket}
+        />
       </Col>
     </Row>
   );
@@ -334,6 +338,8 @@ class SpecificChapterView extends Component {
         }));
       });
 
+    // setTimeout(this.resolveTheMarket, 5000);
+
     //From chapter ID fetch book details
 
     // let resolutionDetails;
@@ -441,7 +447,6 @@ class SpecificChapterView extends Component {
     const amountStakedOnVote = this.state.reader.stakedAmount;
     const userAccount = this.state.reader.account;
 
-    console.log(amountStakedOnVote);
     storyContract.methods
       .voteForFollowup(chapterId, vote)
       .send({
@@ -467,6 +472,7 @@ class SpecificChapterView extends Component {
         <AuthorStatusPanel
           deadline={this.state.chapter.deadline}
           question={this.state.chapter.question}
+          resolveTheMarket={this.resolveTheMarket}
         />
       );
     } else {
@@ -496,11 +502,34 @@ class SpecificChapterView extends Component {
       }
     }
   };
-  resolveMarket = () => {
-    console.log("Finished");
+  resolveTheMarket = () => {
+    //Market resolved
+
+    const chapterId = this.state.chapter.id;
+    const userAccount = this.state.reader.account;
+
+    storyContract.methods
+      .payReaders(chapterId)
+      .send({
+        from: userAccount
+      })
+      .then(function(receipt) {
+        console.log(receipt);
+        //Readers incentivized for reading
+        storyContract.methods
+          .makePaymentOnConsensus(chapterId)
+          .send({
+            from: userAccount
+          })
+          .then(function(receipt) {
+            //Readers incentivized for voting
+            console.log(receipt);
+          });
+      });
   };
 
   render() {
+    console.log(this.state);
     return (
       <Layout style={{ padding: "24px 20px", background: "#fff" }}>
         <Row>

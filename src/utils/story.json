@@ -375,6 +375,33 @@
     },
     {
       "constant": true,
+      "inputs": [
+        {
+          "name": "_chapterId",
+          "type": "uint256"
+        }
+      ],
+      "name": "createConsesus",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        },
+        {
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
       "inputs": [],
       "name": "getAllAuthors",
       "outputs": [
@@ -496,6 +523,37 @@
           ],
           "name": "",
           "type": "tuple[]"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_chapterId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getIndividualEarning",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "name": "",
+          "type": "bool"
+        },
+        {
+          "name": "",
+          "type": "bool"
+        },
+        {
+          "name": "",
+          "type": "uint256"
         }
       ],
       "payable": false,
