@@ -13,11 +13,10 @@ Feugiat in fermentum posuere urna nec tincidunt praesent semper. Condimentum id 
 const storyContractAddress = "0x342f82bd38f774a8a417bd1f81bcbd41e435d147";
 
 export const calculateDeadline = creationTime => {
-  return moment(parseInt(creationTime) * 1000).add(48, "h");
+  return moment(parseInt(creationTime) * 1000).add(70, "m");
 };
 
 const setProvider = () => {
-  // console.log("Function run");
   let web3;
   if (window.ethereum) {
     web3 = new Web3(window.ethereum);
@@ -51,37 +50,3 @@ export const storyContract = new web3.eth.Contract(
   storyContractABI.abi,
   storyContractAddress
 );
-
-// async function getAccountDetails() {
-//   return await web3.eth.getAccounts()[0];
-// }
-
-// export const ETH_ADDRESS = getAccountDetails();
-
-// export const fetchAccounts = () => {
-//   return new Promise((resolve, reject) => {
-//     const { web3 } = window;
-//     const ethAccounts = getAccounts();
-
-//     if (isEmpty(ethAccounts)) {
-//       web3 && web3.eth && web3.eth.getAccounts((err, accounts) => {
-//         if (err) {
-//           reject(err);
-//         } else {
-//           resolve(accounts);
-//         }
-//       });
-//     } else {
-//       resolve(ethAccounts);
-//     }
-//   });
-// };
-
-// function getAccounts() {
-//   try {
-//     const { web3 } = window;
-//     // throws if no account selected
-//     return web3.eth.accounts;
-//   } catch (e) {
-//     return [];
-// }

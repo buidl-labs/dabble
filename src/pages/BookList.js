@@ -18,9 +18,11 @@ const RenderBooksCard = ({ listOfBooks }) => {
     <h1>No Books found</h1>
   ) : (
     listOfBooks.map(book => (
-      <Link key={book.id} to={`/chapter-list/${book.id}`}>
-        <BookCard title={book.title} />
-      </Link>
+      <Col key={book.id} xs={{ span: 24 }} sm={{ span: 8 }} lg={{ span: 4 }}>
+        <Link to={`/chapter-list/${book.id}`}>
+          <BookCard title={book.title} />
+        </Link>
+      </Col>
     ))
   );
 };
@@ -59,7 +61,7 @@ class BookList extends Component {
           title="Book List 📚"
           // subTitle="This is a subtitle"
         />
-        <Row gutter={8}>
+        <Row gutter={16}>
           {this.state.loaded ? (
             <RenderBooksCard listOfBooks={this.state.listOfBooks} />
           ) : (

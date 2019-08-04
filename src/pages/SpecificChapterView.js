@@ -167,7 +167,8 @@ const IncentivizeReadersPanel = ({
   stakedAmount,
   updateStakingAmount,
   isReaderIncentivizationProcessFinished,
-  updateReaderIncentivizationProcessStatus
+  updateReaderIncentivizationProcessStatus,
+  resolveTheMarket
 }) => {
   const showReaderApproriatePanel = readingStatus ? (
     <StakingPanel
@@ -193,7 +194,11 @@ const IncentivizeReadersPanel = ({
         {showReaderApproriatePanel}
       </Col>
       <Col span={24} style={{ marginTop: 24, textAlign: "center" }}>
-        <Countdown title="Time Remaining" value={deadline} />
+        <Countdown
+          title="Time Remaining"
+          value={deadline}
+          onFinish={resolveTheMarket}
+        />
       </Col>
     </Row>
   );
@@ -485,10 +490,14 @@ class SpecificChapterView extends Component {
             updateReaderIncentivizationProcessStatus={
               this.updateReaderIncentivizationProcessStatus
             }
+            resolveTheMarket={this.resolveTheMarket}
           />
         );
       }
     }
+  };
+  resolveMarket = () => {
+    console.log("Finished");
   };
 
   render() {
