@@ -1,47 +1,38 @@
-_Visit live demo at https://dabble.surge.sh/_
+# Dabble
 
-# Component and flow of Application
+A wordplay on dabbling into blogging + decentralized autonomous blogging platform. 
+Visit live demo at https://dabble.surge.sh/_
 
-### For a new User
-* connect metamask of user to the site
-* allow user to create transactions on matic network
-* Dashboard consists of a list of books being written on the platform
-* New user is able to
-    * Read other books
-    * Write a new Book
+## Ideation
 
-### While writing a book
-* User can write a chapter of a new Book or
-* User can continue writing new chapters for an existing book
-* Whenever a new chapter is uploaded, user puts some eth on stake for that chapter.
-* For the chapter being uploaded, Author is allowed to create polls with binary answer
-* All readers who read the chapter get 5% of the Author's stake amount
+We wanted to combine the following powers:
+* Of the benefits of blockchains: open, permisionless, censorship resistant. 
+* Of the benefits of Matic: 
+  * small micropayments and bulk transactions.
+  * Multiple markets may resolve at the same time. 
+* Of the power of decentralized writing communities like Wikipedia and combined with the ideas from game theory. 
 
+## Market Validation
+* China: 
+   * The QQ Reading model from https://a16z.com/2018/12/07/when-advertising-isnt-enough-multimodal-business-models-product-strategy/
+    * Paid books allow readers access of up to ⅔ of the book for free. Readers have time to get hooked before they need to pay to unlock the ending. 
+    * Books are also sold as bite-sized snacks. Readers pay per 1,000 words, for often-serialized works. Below is a screenshot of one of the most popular books from 2014, 一世倾城. It has over 10,000 chapters and is still being updated — now more than 46 times the length of the entire Harry Potter series. Because authors can publish chapters piecemeal, they are also able to incorporate reader feedback to quickly change plots or even kill off characters.
+   * Some authors offer free books and illustrations, gain a loyal user base, and then collect money through tips. At the end of each chapter, an overlay button for tipping authors allows readers to tip from $0.15 and up.
+   * Valued at $1.1 billion with 850 million active users. 
+* Similar startups in India: 
+   * https://www.qwertythoughts.com/
+ 
 
-### About Polls by Author
-* Readers are allowed to take part in poll by putting their a part of their stake.
-* Voters who were in minority, would loose theior staked amount.
-* Voters who secured majority, will recive rewards
-    *  Rewardpool comprise of: All the staked amount by readers+ 95% of the Author's stake
-    *  Every voter in winning pool gets rewards in proportions to their staked amount.
-
-### While reading books:
-* User selects a book, and a list of chapters of that book is displayed
-* User selects a chapter, and chapter content is displayed.
-* User can finish reading and not take part in polls.
-* User can decide to participate in poll and put stake on any option.
-* Upon finishing reading, user can submit a transaction to indicate that reading was completed.
-* To paeticipate in poll, user can submit a transaction, indicating the vote and the stake.
-
-### When Polling period ends for a chapter
-* 5% of Author's stake is eligible to be claimed by all readers.
-* All readers are eligible to claim their share from 5% of the Author's stake.
-* All readers and voters are eligible to initiate disbursal of Poll rewards.
+Why blockchain? 
+Global permisionless market. See how well films like Dangal & Andhadhun have performed in the chinese market, Narcos performing in Indian market. 
 
 
-# Spec Sheet - Dable
-==
+Difference from Augur: 
+* The game theroy probably doesn't incentivize the underdog.
+* Specialized for online publishing industry. 
 
+
+## Spec Sheet: 
 Actors:
 * Writer
 * Reader
@@ -154,6 +145,49 @@ Game theory possible use cases:
 * Writers with less stake are automatically more desirable given the above game theory:
     * Less readers read, less their reading dilution.
     * And hence when readers enter voting, the odds become more even.
+
+
+
+# Component and flow of Application
+
+### For a new User
+* connect metamask of user to the site
+* allow user to create transactions on matic network
+* Dashboard consists of a list of books being written on the platform
+* New user is able to
+    * Read other books
+    * Write a new Book
+
+### While writing a book
+* User can write a chapter of a new Book or
+* User can continue writing new chapters for an existing book
+* Whenever a new chapter is uploaded, user puts some eth on stake for that chapter.
+* For the chapter being uploaded, Author is allowed to create polls with binary answer
+* All readers who read the chapter get 5% of the Author's stake amount
+
+
+### About Polls by Author
+* Readers are allowed to take part in poll by putting their a part of their stake.
+* Voters who were in minority, would loose theior staked amount.
+* Voters who secured majority, will recive rewards
+    *  Rewardpool comprise of: All the staked amount by readers+ 95% of the Author's stake
+    *  Every voter in winning pool gets rewards in proportions to their staked amount.
+
+### While reading books:
+* User selects a book, and a list of chapters of that book is displayed
+* User selects a chapter, and chapter content is displayed.
+* User can finish reading and not take part in polls.
+* User can decide to participate in poll and put stake on any option.
+* Upon finishing reading, user can submit a transaction to indicate that reading was completed.
+* To paeticipate in poll, user can submit a transaction, indicating the vote and the stake.
+
+### When Polling period ends for a chapter
+* 5% of Author's stake is eligible to be claimed by all readers.
+* All readers are eligible to claim their share from 5% of the Author's stake.
+* All readers and voters are eligible to initiate disbursal of Poll rewards.
+
+
+
 
 ## Setting up Project
 
