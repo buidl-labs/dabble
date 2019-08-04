@@ -3,23 +3,40 @@ import { Link } from "react-router-dom";
 
 //Styling
 import { Layout } from "antd";
-import { Row, Col, Radio } from "antd";
+import { Row, Col } from "antd";
 import { PageHeader } from "antd";
-import { Input, Button, Result } from "antd";
-import { Form, InputNumber } from "antd";
 
+import { Input, Button } from "antd";
+import { Form, InputNumber, Radio, Result } from "antd";
 import { storyContract, web3 } from "../utils/utils";
 
 const { TextArea } = Input;
 
-class PublisherMode extends React.Component {
+class PublishingModeChapter extends React.Component {
   state = {
     author: "",
+    bookTitle: "",
+    bookId: "",
     submittedEntry: false
   };
 
   async componentDidMount() {
+    const that = this;
+    const { bookId } = this.props.match.params;
+
     await this.getAccountDetails();
+
+    storyContract.methods
+      .bookIdMapping(bookId)
+      .call()
+      .then(result => {
+        console.log(result);
+        that.setState({
+          bookTitle: result.name,
+          author: result.authorId,
+          bookId: result.bookId
+        });
+      });
   }
 
   async getAccountDetails() {
@@ -33,16 +50,11 @@ class PublisherMode extends React.Component {
     const that = this;
 
     this.props.form.validateFieldsAndScroll((err, values) => {
-      console.log(err);
-
       if (!err) {
-        console.log("VALUES", values);
-
         const {
           chapterTitle,
           content,
           question,
-          bookTitle,
           stakedAmount,
           authorPreference
         } = values;
@@ -51,19 +63,19 @@ class PublisherMode extends React.Component {
 
         storyContract.methods
           .createChapter(
-            0,
+            parseInt(this.state.bookId),
             chapterTitle,
             content,
             question,
             authorPreference,
-            bookTitle
+            ""
           )
           .send({
             from: userAccount,
             value: web3.utils.toWei(stakedAmount.toString(), "ether")
           })
           .then(function(reciept) {
-            console.log(reciept);
+            // console.log(reciept);
             that.setState({ submittedEntry: true });
           });
       }
@@ -77,12 +89,15 @@ class PublisherMode extends React.Component {
   render() {
     const { getFieldDecorator } = this.props.form;
 
+    console.log(this.state);
+    // console.log(this.props.match.params);
+
     return (
       <Layout style={{ padding: "24px 20px", background: "#fff" }}>
         {this.state.submittedEntry ? (
           <Result
             status="success"
-            title="Successfully submitted your book to the blockchain!"
+            title="Successfully submitted your next chapter to the blockchain!"
             subTitle="Strap in for the feedback!"
             extra={[
               <Link to={"/"}>
@@ -98,24 +113,13 @@ class PublisherMode extends React.Component {
               <Col span={24}>
                 <PageHeader
                   onBack={() => this.goBack()}
-                  title="Write your next dream book!"
+                  title="Write your next chapter:"
                 />
               </Col>
             </Row>
             <Form onSubmit={this.handleSubmit} hideRequiredMark={true}>
-              <Form.Item label="Enter book's title: ">
-                {getFieldDecorator("bookTitle", {
-                  rules: [
-                    {
-                      type: "string",
-                      message: ""
-                    },
-                    {
-                      required: true,
-                      message: "Please input your book title!"
-                    }
-                  ]
-                })(<Input />)}
+              <Form.Item label="Book's title: ">
+                {this.state.bookTitle}
               </Form.Item>
               <Form.Item label="Enter chapter's title: ">
                 {getFieldDecorator("chapterTitle", {
@@ -179,7 +183,6 @@ class PublisherMode extends React.Component {
                 })(<InputNumber />)}
                 <span className="ant-form-text"> ETH</span>
               </Form.Item>
-
               <Form.Item label="In case of tie, your preference">
                 {getFieldDecorator("authorPreference")(
                   <Radio.Group>
@@ -202,6 +205,8 @@ class PublisherMode extends React.Component {
   }
 }
 
-const WrappedPublisherMode = Form.create({ name: "register" })(PublisherMode);
+const WrappedPublishingModeChapter = Form.create({ name: "register" })(
+  PublishingModeChapter
+);
 
-export default WrappedPublisherMode;
+export default WrappedPublishingModeChapter;

@@ -1,14 +1,15 @@
 import React from "react";
 import { Card } from "antd";
 
-const BookCard = ({ title }) => (
+const { Meta } = Card;
+
+const BookCard = ({ title, image }) => (
   <Card
-    style={{ marginTop: 16 }}
-    title={title}
-    bordered={true}
-    hoverable={true}
+    hoverable
+    style={{ marginTop: 20 }}
+    cover={<img alt="example" src={image} />}
   >
-    Card content
+    <Meta title={title} />
   </Card>
 );
 
