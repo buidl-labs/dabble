@@ -71,7 +71,7 @@
       "inputs": [
         {
           "name": "_name",
-          "type": "string"
+          "type": "uint256"
         }
       ],
       "name": "createReader",
@@ -540,19 +540,19 @@
       "name": "getIndividualEarning",
       "outputs": [
         {
-          "name": "",
+          "name": "amountStaked",
           "type": "uint256"
         },
         {
-          "name": "",
+          "name": "castedVote",
           "type": "bool"
         },
         {
-          "name": "",
+          "name": "winning_status",
           "type": "bool"
         },
         {
-          "name": "",
+          "name": "maxPayment",
           "type": "uint256"
         }
       ],
@@ -610,7 +610,7 @@
       "outputs": [
         {
           "name": "name",
-          "type": "string"
+          "type": "uint256"
         }
       ],
       "payable": false,

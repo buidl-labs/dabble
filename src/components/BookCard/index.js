@@ -3,16 +3,11 @@ import { Card } from "antd";
 
 const { Meta } = Card;
 
-const BookCard = ({ title }) => (
+const BookCard = ({ title, image }) => (
   <Card
     hoverable
     style={{ marginTop: 20 }}
-    cover={
-      <img
-        alt="example"
-        src="https://images-na.ssl-images-amazon.com/images/I/91ocU8970hL.jpg"
-      />
-    }
+    cover={<img alt="example" src={image} />}
   >
     <Meta title={title} />
   </Card>

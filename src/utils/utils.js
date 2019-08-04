@@ -10,10 +10,10 @@ Ornare aenean euismod elementum nisi quis eleifend quam. Aliquam faucibus purus 
 
 Feugiat in fermentum posuere urna nec tincidunt praesent semper. Condimentum id venenatis a condimentum vitae sapien pellentesque habitant. In arcu cursus euismod quis viverra nibh cras pulvinar. Leo vel orci porta non pulvinar. In ornare quam viverra orci. Risus in hendrerit gravida rutrum quisque non. Morbi tristique senectus et netus. Quam elementum pulvinar etiam non quam lacus. Cursus vitae congue mauris rhoncus aenean. Tortor posuere ac ut consequat. Platea dictumst vestibulum rhoncus est pellentesque elit ullamcorper.`;
 
-const storyContractAddress = "0x00e95fe70d6825b5c40a799fdbf9bb73a36dbb89";
+const storyContractAddress = "0x5bd7e290081268dd81b7c73243e2a9d00d02c405";
 
 export const calculateDeadline = creationTime => {
-  return moment(parseInt(creationTime) * 1000).add(48, "h");
+  return moment(parseInt(creationTime) * 1000).add(1, "m");
 };
 
 const setProvider = () => {

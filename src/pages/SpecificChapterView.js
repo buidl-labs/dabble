@@ -20,39 +20,78 @@ const { Paragraph, Title, Text } = Typography;
 const { Countdown } = Statistic;
 const ButtonGroup = Button.Group;
 
-const MarketResolvedPanel = ({ question, resolutionDetails }) => (
-  <Row gutter={16}>
-    <Col span={24} style={{ marginTop: 24, textAlign: "center" }}>
-      <Typography>
-        <Title level={4}>{question} in the next chapter?</Title>
-      </Typography>
-    </Col>
-    <Col span={12} style={{ marginTop: 24, textAlign: "center" }}>
-      <Statistic
-        title="Your Vote"
-        value={resolutionDetails.yourVote ? "Yes" : "No"}
-      />
-    </Col>
-    <Col span={12} style={{ marginTop: 24, textAlign: "center" }}>
-      <Statistic
-        title="Community Vote"
-        value={resolutionDetails.communityVote ? "Yes" : "No"}
-      />
-    </Col>
-    <Col span={12} style={{ marginTop: 24, textAlign: "center" }}>
-      <Statistic
-        title="Youe Winnings"
-        value={`$${resolutionDetails.yourWinnings}`}
-      />
-    </Col>
-    <Col span={12} style={{ marginTop: 24, textAlign: "center" }}>
-      <Statistic
-        title="Community Winnings"
-        value={`$${resolutionDetails.communityWinnings}`}
-      />
-    </Col>
-  </Row>
-);
+class MarketResolvedPanel extends Component {
+  state = {
+    author: "",
+    myVote: false,
+    communityVote: false,
+    myWinnings: 0,
+    maxWinnings: 0
+  };
+
+  async getAccountDetails() {
+    const address = await web3.eth.getAccounts();
+    this.setState({ author: address[0] });
+  }
+
+  async componentDidMount() {
+    //fetch Book Chapters
+    const that = this;
+
+    await this.getAccountDetails;
+
+    storyContract.methods
+      .getIndividualEarning(this.props.chapterId)
+      .call({ from: this.props.reader })
+      .then(resolution => {
+        console.log(resolution);
+
+        const myVote = resolution.castedVote;
+        const communityVote = resolution.winning_status ? myVote : !myVote;
+        const myWinnings = web3.utils.fromWei(resolution.amountStaked, "ether");
+        const maxWinnings = web3.utils.fromWei(resolution.maxPayment, "ether");
+
+        that.setState({ myVote, communityVote, myWinnings, maxWinnings });
+      });
+  }
+
+  render() {
+    console.log(this.state);
+    return (
+      <Row gutter={16}>
+        <Col span={24} style={{ marginTop: 24, textAlign: "center" }}>
+          <Typography>
+            <Title level={4}>{this.props.question} in the next chapter?</Title>
+          </Typography>
+        </Col>
+        <Col span={12} style={{ marginTop: 24, textAlign: "center" }}>
+          <Statistic
+            title="Your Vote"
+            value={this.state.myVote ? "Yes" : "No"}
+          />
+        </Col>
+        <Col span={12} style={{ marginTop: 24, textAlign: "center" }}>
+          <Statistic
+            title="Community Vote"
+            value={this.state.communityVote ? "Yes" : "No"}
+          />
+        </Col>
+        <Col span={12} style={{ marginTop: 24, textAlign: "center" }}>
+          <Statistic
+            title="Your Winnings"
+            value={`ETH ${this.state.myWinnings}`}
+          />
+        </Col>
+        <Col span={12} style={{ marginTop: 24, textAlign: "center" }}>
+          <Statistic
+            title="Community Winnings"
+            value={`ETH ${this.state.maxWinnings}`}
+          />
+        </Col>
+      </Row>
+    );
+  }
+}
 
 const StakingInterface = ({
   stakedOn,
@@ -96,7 +135,15 @@ const StakingInterface = ({
   </>
 );
 
-const StakingFinishedInterace = () => <h1>Thank you for voting!</h1>;
+const StakingFinishedInterace = ({ deadlineStatus, resolveTheMarket }) => {
+  return deadlineStatus ? (
+    <Button type="primary" onClick={resolveTheMarket}>
+      Claim Rewards
+    </Button>
+  ) : (
+    <h1>Thank you for voting!</h1>
+  );
+};
 
 const StakingPanel = ({
   question,
@@ -105,7 +152,9 @@ const StakingPanel = ({
   updateStakingAmount,
   stakedAmount,
   isReaderIncentivizationProcessFinished,
-  updateReaderIncentivizationProcessStatus
+  updateReaderIncentivizationProcessStatus,
+  deadlineStatus,
+  resolveTheMarket
 }) => {
   return (
     <>
@@ -120,7 +169,10 @@ const StakingPanel = ({
         </Typography>
       </Col>
       {isReaderIncentivizationProcessFinished ? (
-        <StakingFinishedInterace />
+        <StakingFinishedInterace
+          deadlineStatus={deadlineStatus}
+          resolveTheMarket={resolveTheMarket}
+        />
       ) : (
         <StakingInterface
           stakedOn={stakedOn}
@@ -168,6 +220,8 @@ const IncentivizeReadersPanel = ({
   updateStakingAmount,
   isReaderIncentivizationProcessFinished,
   updateReaderIncentivizationProcessStatus,
+  deadlineStatus,
+  updateDeadlineStatus,
   resolveTheMarket
 }) => {
   const showReaderApproriatePanel = readingStatus ? (
@@ -183,6 +237,8 @@ const IncentivizeReadersPanel = ({
       updateReaderIncentivizationProcessStatus={
         updateReaderIncentivizationProcessStatus
       }
+      deadlineStatus={deadlineStatus}
+      resolveTheMarket={resolveTheMarket}
     />
   ) : (
     <UpdateReadingPanel updateReadStatus={updateReadStatus} />
@@ -197,7 +253,7 @@ const IncentivizeReadersPanel = ({
         <Countdown
           title="Time Remaining"
           value={deadline}
-          onFinish={resolveTheMarket}
+          onFinish={updateDeadlineStatus}
         />
       </Col>
     </Row>
@@ -218,11 +274,7 @@ const AuthorStatusPanel = ({ deadline, question, resolveTheMarket }) => {
         </Typography>
       </Col>
       <Col span={24} style={{ marginTop: 24, textAlign: "center" }}>
-        <Countdown
-          title="Time Remaining"
-          value={deadline}
-          onFinish={resolveTheMarket}
-        />
+        <Countdown title="Time Remaining" value={deadline} />
       </Col>
     </Row>
   );
@@ -255,6 +307,7 @@ class SpecificChapterView extends Component {
       readCheck: false,
       votedCheck: false
     },
+    deadlineFinished: false,
     resolutionDetails: {}
   };
 
@@ -337,33 +390,6 @@ class SpecificChapterView extends Component {
           }
         }));
       });
-
-    // setTimeout(this.resolveTheMarket, 5000);
-
-    //From chapter ID fetch book details
-
-    // let resolutionDetails;
-    // if (predictionMarket === false) {
-    //   //Fetch Resolution Panel Details
-    //   //Fetch your vote
-    //   //fetch community vote
-    //   //fetch your winnings
-    //   //fetch community winnings
-    //   resolutionDetails = {
-    //     yourVote: true,
-    //     communityVote: false,
-    //     yourWinnings: -5,
-    //     communityWinnings: 33
-    //   };
-    // }
-
-    // console.log(sampleContent);
-    //from chapter Id fetch chapter details
-
-    // this.setState({
-    //   ...chapterDetails,
-    //   resolutionDetails
-    // });
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -482,7 +508,6 @@ class SpecificChapterView extends Component {
       ) {
         return (
           <IncentivizeReadersPanel
-            deadline={this.state.chapter.deadline}
             readingStatus={this.state.reader.isRead}
             updateReadStatus={this.updateReadStatus}
             question={this.state.chapter.question}
@@ -496,12 +521,20 @@ class SpecificChapterView extends Component {
             updateReaderIncentivizationProcessStatus={
               this.updateReaderIncentivizationProcessStatus
             }
+            deadline={this.state.chapter.deadline}
+            deadlineStatus={this.state.deadlineFinished}
+            updateDeadlineStatus={this.updateDeadlineStatus}
             resolveTheMarket={this.resolveTheMarket}
           />
         );
       }
     }
   };
+
+  updateDeadlineStatus = () => {
+    this.setState({ deadlineFinished: true });
+  };
+
   resolveTheMarket = () => {
     //Market resolved
 
@@ -517,7 +550,7 @@ class SpecificChapterView extends Component {
         console.log(receipt);
         //Readers incentivized for reading
         storyContract.methods
-          .makePaymentOnConsensus(chapterId)
+          .makePayemntOnConsensus(chapterId)
           .send({
             from: userAccount
           })
@@ -559,7 +592,9 @@ class SpecificChapterView extends Component {
         {this.state.chapter.isResolved ? (
           <MarketResolvedPanel
             question={this.state.question}
-            resolutionDetails={this.state.resolutionDetails}
+            chapterId={this.state.chapter.id}
+            reader={this.state.reader.account}
+            // resolutionDetails={this.state.resolutionDetails}
           />
         ) : (
           this.renderIncentivedReadingPanel()
