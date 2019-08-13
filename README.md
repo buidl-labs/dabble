@@ -3,7 +3,15 @@
 A wordplay on dabbling into blogging + decentralized autonomous blogging platform. 
 Visit live demo at https://dabble.surge.sh/_
 
+To use this platform, you would need:
+* [Metamask](https://metamask.io/)
+* Switch to Matic Network: 
+ * Go to networks -> Custom RPC -> In RPC URL enter https://testnet2.matic.network
+ * Matic test net tokens to interact with the platform. Get yours from here: https://docs.matic.network/matic-js-tutorial/#matic-faucet
+
 "Don’t debate people in the media when you can debate them in the marketplace." - Naval Ravikant. 
+
+This hack was created in [ETH India 2019](https://ethindia.co/) and won Matic network's $1k bounty. 
 
 ## Ideation
 
@@ -233,5 +241,3 @@ Tech Side:
 * Privacy on votes. 
 * Time based resoluton of the market on chain. 
 * IPFS integration for content
-
-
